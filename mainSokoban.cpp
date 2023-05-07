@@ -27,20 +27,55 @@ class Game{
 
     public:
     Game(){};
-    
+    void leerArchivo();
     string** generarMatriz(int row,int column);
     
 };
 
+void menu(){
+    int op = 0;
+    bool exit = false;
+
+    while (!exit){
+
+    cout <<"1. Juego en vivo"<<endl;
+    cout <<"2. Juego cargado."<<endl;
+    cout <<"3. Cargar partida." <<endl;
+    cout <<"4. Cargar tablero."<<endl;
+    cout <<"5. Salir."<<endl;
+    cin >> op;
+
+    switch (op){ 
+    
+    case 1:
+        
+        break;
+    case 2:
+        
+        break;
+    case 3:
+        
+        break;
+    case 4:
+        
+        break;
+    case 5:
+        exit = true;
+        break;
+    
+    default:
+    
+        cout <<"Opción inválida"<<endl;
+        break;
+    }
+       
+    
+    }
+    
+};
+
 int main(){
-        
-        Game a;
-        setMatriz p;
-        //setMatriz a;
-       string** m = a.generarMatriz(6,7);
-       p.ImprimirMatriz(m,6,7);
-        
-        
+        menu();  
     return 0;
 };
 
