@@ -3,7 +3,7 @@
 XXXXXX
 XK...X
 X.C..X
-XXX..X
-XFC..X
-X...FX 
+XXF..X
+X....X
+X....X 
 XXXXXX
