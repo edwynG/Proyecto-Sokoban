@@ -10,12 +10,15 @@ struct arrF
     int b;
 
 };
- arrF arr[100000000];
+ arrF Puntos[100000000];
+ arrF Cajas[100000000];
+
      int n=0;
      string name;
-    int canitdadCaja=0;
+    int cantidadCaja=0;
     int cantidadPuntos=0;
-struct Sokoban
+   
+    class Sokoban
 {
     private:
     string person = "K";
@@ -36,7 +39,7 @@ struct Sokoban
     void set_is_punto(bool op){ispunto = op;}
     bool get_is_punto(){return ispunto;}
     void buscarSokoban(string** matriz,int row,int col,int &a,int &b);
-    void ValidadPuntoFinal(string** matriz,int row,int col,arrF arr[],int &n);
+    void EncontrarPuntos(string** matriz,int row,int col,arrF arr[],int &n,string L);
     void typeData(string m);
     void setSokoban(string n){ person=n;}
     void setMuro(string n){ muro=n;}
@@ -60,6 +63,7 @@ class Game{
 
     bool initGame = false;
     string** matriz;
+    string** matrizCargada;
     int row=0;
     int col=0;
     bool wins = false;
@@ -85,6 +89,8 @@ class Game{
     bool isCorrecMatrix(string** matriz,int row,int col);
     bool isCorrectoLimite(string** m,int row, int column);
     bool isCorrectoMatriz(string A[],int row, int col,int n);
+    string** getMatrizCargada(){ return matrizCargada;}
+    void restaurarMatriz(string** m){matriz = m;}
 
 };
 
@@ -181,7 +187,7 @@ void Game::juegoEnVivo(){
     }
     setWins(false);
     borraMatriz(getRow(),getMatriz());
-    cargarTablero(name);
+    restaurarMatriz(getMatrizCargada());
     
 }
 
@@ -197,14 +203,15 @@ void Game::juegoEnVivo(){
             cout<<"Ganaste la partida"<<endl;
             setWins(false);
             borraMatriz(getRow(),getMatriz());
-            cargarTablero(name);
+            restaurarMatriz(getMatrizCargada());
+
            
         }else{
             juegoEnVivo();
         }
     }else{
         borraMatriz(getRow(),getMatriz());
-        cargarTablero(name);
+        restaurarMatriz(getMatrizCargada());
 
     }
     }
@@ -225,16 +232,31 @@ void Game::moverSokoban(string &m,bool op){
 }
 
 void Game::isWins(string **matriz,int row,int col){
-   for (int i = 0; i < n; i++)
-   {
-       if( matriz[arr[i].a][arr[i].b] != "C"){
-            setWins(false);
-            break;
-       }else{
-            setWins(true);
-       }
-   }
-
+    Sokoban obj;
+   
+    if(cantidadPuntos > cantidadCaja){
+        for (int i = 0; i < cantidadCaja; i++)
+        {
+            if(matriz[Cajas[i].a][Cajas[i].b] !=  matriz[Puntos[i].a][Puntos[i].b]){
+                setWins(false);
+                break;
+            }else{
+                setWins(true);
+            }
+        }
+        
+        
+    }else{
+        for (int i = 0; i < cantidadPuntos; i++)
+        {
+            if( matriz[Puntos[i].a][Puntos[i].b] != obj.getCaja()){
+                    setWins(false);
+                    break;
+            }else{
+                    setWins(true);
+            }
+        }
+    }
 
 }
 
@@ -243,7 +265,9 @@ void Sokoban::moverse(string** matriz,int row,int col,char m){
     int f=0;
     int c=0;
    
-    ValidadPuntoFinal(matriz,row,col,arr,n);
+    EncontrarPuntos(matriz,row,col,Puntos,cantidadPuntos,getPuntofinal());
+    EncontrarPuntos(matriz,row,col,Cajas,cantidadCaja,getCaja());
+
     //busca al socokan
     buscarSokoban(matriz,row,col,f,c);
     switch (m)
@@ -355,10 +379,10 @@ void Sokoban::moverse(string** matriz,int row,int col,char m){
                 default:
                     break;
                 }
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < cantidadPuntos; i++)
     {
-        int a= arr[i].a;
-        int b= arr[i].b;
+        int a= Puntos[i].a;
+        int b= Puntos[i].b;
         if(matriz[a][b] == "."){
             matriz[a][b]=getPuntofinal();
         }
@@ -374,12 +398,12 @@ void  Sokoban::moverObjetos(string &a, string &b){
     b= t;
 }
 
-  void Sokoban::ValidadPuntoFinal(string** matriz,int row,int col,arrF arr[],int &n){
+  void Sokoban::EncontrarPuntos(string** matriz,int row,int col,arrF arr[],int &n,string L){
        for (int i = 0; i < row; i++)
     {
         for (int j = 0; j < col; j++)
         {
-            if (matriz[i][j] == getPuntofinal())
+            if (matriz[i][j] == L)
             {
               arr[n].a=i;
               arr[n].b=j;
@@ -400,7 +424,7 @@ void Sokoban::buscarSokoban(string** matriz,int row,int col,int &a,int &b){
             {
                a=i;
                b=j;
-               break;
+              
             }
             
         }
@@ -411,6 +435,10 @@ void Sokoban::buscarSokoban(string** matriz,int row,int col,int &a,int &b){
 
 /*metodo para cargar tablero*/
 void Game::cargarTablero(string name){
+    if(initGame){
+        borraMatriz(getRow(),getMatriz());
+        initGame =false;
+    }
     setMatriz  rellenarMatriz;
     ifstream File(name.c_str());
 
@@ -418,6 +446,7 @@ void Game::cargarTablero(string name){
             File >> row;
             File >> col;
             if(row == col){
+                restaurarMatriz(getMatrizCargada());
                 cout<<"Tablero Invalido"<<endl;
                
             }else{
@@ -434,6 +463,7 @@ void Game::cargarTablero(string name){
                 }
                     //funcion para generar la matriz con el array
                 matriz = rellenarMatriz.generarMatriz(row,col,arr);
+                matrizCargada = rellenarMatriz.generarMatriz(row,col,arr);
                 bool  isCorrectaMatriz = isCorrectoMatriz(arr,row,col,tam);
                 bool isCorrectoCaracter= isCorrecMatrix(getMatriz(),getRow(),getCol());
                 bool isLimite = isCorrectoLimite(getMatriz(),getRow(),getCol());
@@ -443,6 +473,8 @@ void Game::cargarTablero(string name){
                 }else{
                     delete[]arr;
                     borraMatriz(getRow(),getMatriz());
+                     restaurarMatriz(getMatrizCargada());
+
                     cout <<"Tablero inválido"<<endl;
                     
                 }
@@ -451,8 +483,7 @@ void Game::cargarTablero(string name){
         File.close();
 
     }else{
-           
-
+        restaurarMatriz(getMatrizCargada());        
         cout <<"Tablero inválido"<<endl;
 
     }
@@ -511,9 +542,6 @@ void Sokoban:: to_upper(string &m){
 
 }
 
-
-
-
 void Game::borraMatriz(int tam,string **matriz){
     for(int i = 0; i < tam; i++){
         delete[]matriz[i];
@@ -521,8 +549,7 @@ void Game::borraMatriz(int tam,string **matriz){
     delete[]matriz;
 }
 
-
-    bool Game::isCorrecMatrix(string** matriz,int row,int col){
+bool Game::isCorrecMatrix(string** matriz,int row,int col){
             bool k=false,c=false,f=false,m=false;
             Sokoban objetos;
             int auxi=0;
@@ -584,43 +611,3 @@ bool Game::isCorrectoLimite(string** m,int row, int column){
     return 1;
 };
 
-
-// void setMatriz::borraMatriz(string** matriz,int fila){
-//     for(int i = 0; i < fila; i++){
-//         delete[]matriz[i];
-//     }
-//     delete[]matriz;
-
-// };
-
-
-
-
-
-// void Sokoban::typeData(string m){
-//     if(m == "k"){
-//         setSokoban("k");
-//     }
-//     if(m== "K"){
-//         setSokoban("K");
-
-//     }
-//     if(m == "c"){
-//         setCaja("c");
-//     }
-//     if(m == "C"){
-//         setCaja("C");
-//     }
-//     if(m == "x"){
-//         setMuro("x");
-//     }
-//     if(m == "X"){
-//         setMuro("X");
-//     }
-//     if(m == "f"){
-//         setPuntofinal("f");
-//     }
-//      if(m == "F"){
-//         setPuntofinal("F");
-//     }
-// }
