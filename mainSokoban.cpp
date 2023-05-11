@@ -681,7 +681,7 @@ bool Game::isCorrecMatrix(string** matriz,int row,int col){
                }
                
             }
-        if( k & c & f & m){
+        if( k && c && f && m){
              return true;
          }
         return 0;
