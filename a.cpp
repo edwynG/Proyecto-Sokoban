@@ -137,6 +137,45 @@ bool isCorrectoMatriz(string A[],int row,int col,int n){
     return 1;
 }
 
+void bucar(){
+  ifstream File("ea.txt");
+    string data;
+    string data2;
+    string  acumulador;
+    string arr[10000];
+    int tam=0;
+    bool a=false;
+    int row=0;
+    if(File.is_open()){
+        File>>data;
+        
+        acumulador = data;
+        row++;
+        while (!File.eof())
+        {
+           do{
+            File>>data2;
+             acumulador+= "\n"+data2;
+             if(!a){row++;};
+           } while( data != data2); 
+            File>> data2;
+            arr[tam]=acumulador;
+            acumulador=data2;
+            tam++;
+            a=true;
+        }
+        cout <<row<<" ";
+        cout <<data.size()<<endl;
+        File.close();
+    }else{
+        cout<<"No hay partida guardada"<<endl;
+    }
+
+    cout<<arr[tam-1]<<endl;
+    
+}
+
+
 int main(){
     
     string m[6][7]={{"a","b","c","d","e","h","i"},
@@ -147,21 +186,23 @@ int main(){
                     {"1","1","1","1","1","1","1"},
                     };
     string arr[10000];
+
+    bucar();
     // ImprimirMatriz(m,6,7);
     // cout<<endl;
     // isCorrectoLimite(m,6,7);
     // ImprimirMatriz(m,6,7);
 
-    dataArr(m,6,7,arr);
-  isCorrectoMatriz(arr,6,7,6);
-    // for (size_t i = 0; i < 6; i++)
-    // {
+//     dataArr(m,6,7,arr);
+//   isCorrectoMatriz(arr,6,7,6);
+//     // for (size_t i = 0; i < 6; i++)
+//     // {
         
         
-    //         cout<<arr[i];
+//     //         cout<<arr[i];
        
         
-    // }
+//     // }
     
 
     return 0;
