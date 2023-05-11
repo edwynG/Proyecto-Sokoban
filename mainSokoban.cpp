@@ -231,12 +231,12 @@ void Game::juegoEnVivo(){
             }
         }
     }else{
-        borraMatriz(getRow(),getMatriz());
+       borraMatriz(getRow(),getMatriz());
         restaurarMatriz(getMatrizCargada());
         resetEstados();
 
     }
-    resetEstados();
+   
    
     }
 
@@ -247,7 +247,7 @@ void Game::cargarPartida(){
     string data2;
     string  acumulador;
     int n = calcularEstado(name);
-    string* arr=new string[n];
+    string arr[n];
     int tam=0;
     bool a=false;
     int row=0;
@@ -273,9 +273,9 @@ void Game::cargarPartida(){
         setRowG(row);
         setColG(data.size());
         setEstadoCargado(arr[tam-1]);
-        delete[]arr;
         File.close();
-       restaurarMatriz(ultimoEstado(getEstadoCargado(),getRowG(),getColG()));
+        borraMatriz(getRow(),getMatriz());
+        restaurarMatriz(ultimoEstado(getEstadoCargado(),getRowG(),getColG()));
         restaurarDatos(row,data.size());
         juegoEnVivo();
 
