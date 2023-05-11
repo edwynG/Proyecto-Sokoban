@@ -110,7 +110,7 @@ class Game{
 };
 
 void menu(){
-        setMatriz a;
+    setMatriz a;
 
     Game gameOptions;
     string op = "";
@@ -507,83 +507,60 @@ void Sokoban::buscarSokoban(string** matriz,int row,int col,int &a,int &b){
 
 /*metodo para cargar tablero*/
 void Game::cargarTablero(string name){
+    if(initGame){
+        borraMatriz(getRow(),getMatriz());
+        initGame =false;
+    }
     setMatriz  rellenarMatriz;
     ifstream File(name.c_str());
-    string line;
-    int tam = 0;
-    string* arr;
-    bool proseguir =true;
+
     if(File.is_open()){
-            while (!File.eof())
-            {
-               File >> row;
-               File >> col;
-               arr = new string[row];
-               if(row == col){
-                break;
-                proseguir = false;
-               }
-
-            
-               do{
-                if(File.eof()){break;}
-                if(tam < row){
+            File >> row;
+            File >> col;
+            if(row == col){
+                restaurarMatriz(getMatrizCargada());
+                cout<<"Tablero Invalido"<<endl;
+               
+            }else{
+                string line;
+                int tam = 0;
+                string* arr = new string[row];
+                //array dinamico para guardar las lineas de la matriz
+                while (!File.eof())
+                {
                     File >> line;
-                    arr[tam]= line;
+                    arr[tam] = line;
                     tam++;
-                }else{tam++;}
-               }while (true);
-               if(tam != row){
-                proseguir = false;
-                break;
-               }
-               if(proseguir){
-                break;
-               }
-            }
-
-            if(proseguir){
-                if(initGame){
-                    borraMatriz(getRow(),getMatriz());
-                    initGame =false;
+                    
                 }
-                //funcion para generar la matriz con el array
+                    //funcion para generar la matriz con el array
                 matriz = rellenarMatriz.generarMatriz(row,col,arr);
+                matrizCargada = rellenarMatriz.generarMatriz(row,col,arr);
                 bool  isCorrectaMatriz = isCorrectoMatriz(arr,row,col,tam);
                 bool isCorrectoCaracter= isCorrecMatrix(getMatriz(),getRow(),getCol());
                 bool isLimite = isCorrectoLimite(getMatriz(),getRow(),getCol());
                 if(isCorrectoCaracter && isLimite && isCorrectaMatriz){
-                    matrizCargada = rellenarMatriz.generarMatriz(row,col,arr);
                     initGame = true;
 
                 }else{
                     delete[]arr;
-                    if(!getInitGame()){
                     borraMatriz(getRow(),getMatriz());
-                    restaurarMatriz(getMatrizCargada());
-                }
+                     restaurarMatriz(getMatrizCargada());
 
                     cout <<"Tablero inválido"<<endl;
                     
                 }
-            }else{
-                delete[]arr;
-                if(!getInitGame()){
-                    borraMatriz(getRow(),getMatriz());
-                    restaurarMatriz(getMatrizCargada());
-                }
-
-                cout <<"Tablero inválido"<<endl;
             }
-            
+    
         File.close();
 
-    }else{      
+    }else{
+        restaurarMatriz(getMatrizCargada());        
         cout <<"Tablero inválido"<<endl;
+
     }
 
 }
-
 bool Game::isCorrectoMatriz(string A[],int row,int col,int n){
     string a="";
     if( n != row){
