@@ -40,7 +40,6 @@ struct arrF
     bool get_is_punto(){return ispunto;}
     void buscarSokoban(string** matriz,int row,int col,int &a,int &b);
     void EncontrarPuntos(string** matriz,int row,int col,arrF arr[],int &n,string L);
-    //void typeData(string m);
     void setSokoban(string n){ person=n;}
     void setMuro(string n){ muro=n;}
     void setCaja(string n){ caja=n;}
@@ -68,11 +67,13 @@ class Game{
     int row=0;
     int col=0;
     bool wins = false;
-    string arregloEstado[100000];
+    string arregloEstado[10000];
     int tamanoEstados=0;
     public:
     Game(){};
-
+    ~Game(){
+        borraMatriz(getRow(),getMatriz());
+    }
     void juegoEnVivo();
     void juegoCargado();
     void cargarPartida();
