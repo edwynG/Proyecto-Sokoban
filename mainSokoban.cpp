@@ -84,10 +84,9 @@ class Game{
     int getCol(){return col;}
     bool getWins(){return wins;}
     void setWins(bool n){ wins = n;}
-    void isWins(string **matriz,int row,int col);
+    void isWins(string **matriz);
     void borraMatriz(int tam, string **matriz);
-    // void  cacheData(string** matriz,int row,int col,string dataArr[],int n);
-    // void saveTable(string** matriz,int row,int col);
+    
     bool isCorrecMatrix(string** matriz,int row,int col);
     bool isCorrectoLimite(string** m,int row, int column);
     bool isCorrectoMatriz(string A,int row, int col,int n);
@@ -102,9 +101,10 @@ class Game{
     void resetEstados(){tamanoEstados=0;}
     void setEstadoCargado(string a){estadoCargado=a;}
     string getEstadoCargado(){return estadoCargado;}
-    int calcularEstado(string name);
+    //int calcularEstado(string name);
     string** cargar(string m,int row,int col);
     void restaurarDatos(int a, int b){ row=a;col =b;}
+    bool ValidCaracteres(string str,int n);
 
 
 };
@@ -191,7 +191,7 @@ void Game::juegoEnVivo(){
 
         moverSokoban(m,false);
         if(m == "G"){break;}
-        isWins(getMatriz(),getRow(),getCol());
+        isWins(getMatriz());
 
         if(getWins()){
             view.ImprimirMatriz(getMatriz(),getRow(),getCol());
@@ -217,7 +217,7 @@ void Game::juegoEnVivo(){
     if(m != "r" && m != "R"){ 
         moverSokoban(m,true);
         if(m != "g" &&  m != "G"){
-            isWins(getMatriz(),getRow(),getCol());
+            isWins(getMatriz());
             if(getWins()){
                 view.ImprimirMatriz(getMatriz(),getRow(),getCol());
                 cout<<"Ganaste la partida"<<endl;
@@ -248,8 +248,8 @@ void Game::cargarPartida(){
     string data;
     string data2;
     string  acumulador;
-    int n = calcularEstado(name);
-    string arr[n];
+    //int n = calcularEstado(name);
+    string arr[10000];
     int tam=0;
     bool a=false;
     int row=0;
@@ -290,13 +290,16 @@ void Game::cargarPartida(){
 void Game::moverSokoban(string &m,bool op){
         Sokoban objeto;
         objeto.to_upper(m);
-        
-        for (int i = 0; i < m.size(); i++){ 
+        int n =m.size();
+        for (int i = 0; i < n; i++){ 
             transformador(getMatriz(),getRow(),getCol(),arregloEstado);
             tamanoEstados++;
-            if(m == "G"){
+            if(m == "G" || op){
                 Escritura(arregloEstado,tamanoEstados,getRow(),getCol());
+                if(!op){
                 break;
+
+                }
             }
             objeto.moverse(getMatriz(),getRow(),getCol(),m[i]);
             if(!op){
@@ -306,7 +309,7 @@ void Game::moverSokoban(string &m,bool op){
 
 }
 
-void Game::isWins(string **matriz,int row,int col){
+void Game::isWins(string **matriz){
     Sokoban obj;
    
     if(cantidadPuntos > cantidadCaja){
@@ -519,30 +522,30 @@ void Game::cargarTablero(string name){
     if(File.is_open()){
             File >> row;
             File >> col;
-            if(row == col){
-                restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
-               // restaurarMatriz(getMatrizCargada());
-                cout<<"Tablero Invalido"<<endl;
-               
-            }else{
                 string line="";
                 string acumulador= "";
                 int tam=0;
                 //array dinamico para guardar las lineas de la matriz
-                
                 do{
                     File >> line;
                     acumulador+=line;
                     tam++;
                     
                 }while (!File.eof());
+                bool  correcta = isCorrectoMatriz(acumulador,getRow(),getCol(),tam);
+                bool caracteres = ValidCaracteres(acumulador,tam);
+            if(row != tam && !correcta && !caracteres){
+                restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
+               // restaurarMatriz(getMatrizCargada());
+                cout<<"Tablero Invalido"<<endl;
+               
+            }else{
                     //funcion para generar la matriz con el array
                 matriz = cargar(acumulador,getRow(),getCol());
                 matrizCargada = acumulador;
-                bool  isCorrectaMatriz = isCorrectoMatriz(acumulador,row,col,tam);
                 bool isCorrectoCaracter= isCorrecMatrix(getMatriz(),getRow(),getCol());
                 bool isLimite = isCorrectoLimite(getMatriz(),getRow(),getCol());
-                if(isCorrectoCaracter && isLimite && isCorrectaMatriz){
+                if(isCorrectoCaracter && isLimite){
                     initGame = true;
 
                 }else{
@@ -566,13 +569,27 @@ void Game::cargarTablero(string name){
     }
 
 }
+
+bool Game::ValidCaracteres(string str,int n){
+    Sokoban obj;
+    string x ="";
+    for (int i = 0; i < n; i++)
+    {
+        x= str[i];
+        if(x != obj.getPerson() && x!= obj.getCaja() &&  x != obj.getMuro() && x!=obj.getPuntofinal() && x!="."){
+            return false;
+        }
+    }
+    return true;
+}
 bool Game::isCorrectoMatriz(string A,int row,int col,int n){
-   
+   int tam=A.size();
+   int cantidad=row*col;
     if( n != row){
         return 0;
     }
 
-    if( A.size() != row*col){
+    if( tam != cantidad){
         return 0;
     }
     return 1;
@@ -666,7 +683,7 @@ bool Game::isCorrecMatrix(string** matriz,int row,int col){
         return 0;
     }
 
-bool Game::isCorrectoLimite(string** m,int row, int column){
+bool Game::isCorrectoLimite(string** m,int row, int col){
    for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++) {
             if (i == 0 || i == row-1) { // Primer y última fila
@@ -728,20 +745,20 @@ void Game::transformador(string** tablero, int row, int column,string arr[]) { /
    arr[tamanoEstados]=res;
 }
 
-int Game::calcularEstado(string name){
-    ifstream File(name.c_str());
-    int n =0;
-    string a;
-    if(File.is_open()){
-        while (!File.eof())
-        {
-            File >>a;
-            n++;
-        }
+// int Game::calcularEstado(string name){
+//     ifstream File(name.c_str());
+//     int n =0;
+//     string a;
+//     if(File.is_open()){
+//         while (!File.eof())
+//         {
+//             File >>a;
+//             n++;
+//         }
         
-    }
-    return n;
-}
+//     }
+//     return n;
+// }
 
 string** Game::cargar(string m,int row,int col){
 
@@ -759,3 +776,5 @@ string** Game::cargar(string m,int row,int col){
          return ma;
      
 }
+
+

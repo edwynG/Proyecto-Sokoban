@@ -1,24 +1,32 @@
 XXXXXXXX
-X......X
+XK.....X
 X.C....X
-XXX...KX
-X....C.X
+XXX..C.X
+X....F.X
 XF.C...X
 XXXXXXXX
 
 XXXXXXXX
-X......X
+X.K....X
 X.C....X
-XXX....X
-X....CKX
+XXX..C.X
+X....F.X
 XF.C...X
 XXXXXXXX
 
 XXXXXXXX
-X......X
+X..K...X
 X.C....X
-XXX....X
-X....C.X
-XF.C..KX
+XXX..C.X
+X....F.X
+XF.C...X
+XXXXXXXX
+
+XXXXXXXX
+X...K..X
+X.C....X
+XXX..C.X
+X....F.X
+XF.C...X
 XXXXXXXX
 
