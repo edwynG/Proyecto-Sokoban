@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <string.h>
+#include <string>
 
 using namespace std;
 
@@ -10,8 +10,8 @@ struct arrF
     int b;
 
 };
- arrF Puntos[100000000];
- arrF Cajas[100000000];
+ arrF Puntos[10000];
+ arrF Cajas[10000];
 
      int n=0;
      string name;
@@ -164,7 +164,7 @@ void menu(){
 
         default:
 
-            cout <<"Opción inválida"<<endl<<endl;
+            cout <<"Opción inválida"<<endl;
             break;
         }
 
@@ -607,9 +607,7 @@ void setMatriz::ImprimirMatriz(string** matriz,int row,int column){
                 cout<<endl;
             }
         }
-        if(i == row-1){
-                //cout<<endl;
-        }
+        
     };
 
 };
