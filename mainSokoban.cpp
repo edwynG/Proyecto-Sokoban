@@ -120,7 +120,7 @@ void menu(){
 
     while (!exit){
 
-        cout <<"1. Juego en vivo"<<endl;
+        cout <<"1. Juego en vivo."<<endl;
         cout <<"2. Juego cargado."<<endl;
         cout <<"3. Cargar partida." <<endl;
         cout <<"4. Cargar tablero."<<endl;
