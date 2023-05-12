@@ -1,8 +1,11 @@
-7 7
+6 7
+
 XXXXXXX
 X....FX
 X.....X
 XXX...X
-X.C...X
-X....KX
+X.C.K.X
 XXXXXXX
+
+
+

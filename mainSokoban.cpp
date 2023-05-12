@@ -526,17 +526,20 @@ void Game::cargarTablero(string name){
                 string acumulador= "";
                 int tam=0;
                 //array dinamico para guardar las lineas de la matriz
-                do{
+                while (true){
                     File >> line;
+                    if(File.eof()){
+                        break;
+                    }
                     acumulador+=line;
                     tam++;
                     
-                }while (!File.eof());
+                };
                 bool  correcta = isCorrectoMatriz(acumulador,getRow(),getCol(),tam);
                 bool caracteres = ValidCaracteres(acumulador,tam);
-            if(row != tam && !correcta && !caracteres){
+            if( !correcta && !caracteres){
                 restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
-               // restaurarMatriz(getMatrizCargada());
+            
                 cout<<"Tablero Invalido"<<endl;
                
             }else{
@@ -552,7 +555,7 @@ void Game::cargarTablero(string name){
                     //delete[]arr;
                     borraMatriz(getRow(),getMatriz());
                     restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
-                    // restaurarMatriz(getMatrizCargada());
+                    
 
                     cout <<"Tablero inválido"<<endl;
                     
