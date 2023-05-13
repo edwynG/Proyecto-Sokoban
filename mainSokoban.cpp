@@ -17,7 +17,7 @@ struct arrF
      string name;
     int cantidadCaja=0;
     int cantidadPuntos=0;
-   
+   void restCantidad(){cantidadPuntos = 0; cantidadCaja=0;}
     class Sokoban
 {
     private:
@@ -39,7 +39,7 @@ struct arrF
     void set_is_punto(bool op){ispunto = op;}
     bool get_is_punto(){return ispunto;}
     void buscarSokoban(string** matriz,int row,int col,int &a,int &b);
-    void EncontrarPuntos(string** matriz,int row,int col,arrF arr[],int &n,string L);
+    void EncontrarPuntos(string** matriz,int row,int col,arrF arr[],int &n,string L,bool op=false);
     void setSokoban(string n){ person=n;}
     void setMuro(string n){ muro=n;}
     void setCaja(string n){ caja=n;}
@@ -102,7 +102,6 @@ class Game{
     void resetEstados(){tamanoEstados=0;}
     void setEstadoCargado(string a){estadoCargado=a;}
     string getEstadoCargado(){return estadoCargado;}
-    //int calcularEstado(string name);
     string** cargar(string m,int row,int col);
     void restaurarDatos(int a, int b){ row=a;col =b;}
     bool ValidCaracteres(string str,int n);
@@ -184,6 +183,8 @@ void Game::juegoEnVivo(){
     setMatriz view;
     string m = "";
     Sokoban objeto;
+    objeto.EncontrarPuntos(getMatriz(),getRow(),getCol(),Puntos,cantidadPuntos,objeto.getPuntofinal());
+    
     while (!getWins()){
         view.ImprimirMatriz(getMatriz(),getRow(),getCol());
         cin>>m;
@@ -213,7 +214,10 @@ void Game::juegoEnVivo(){
 
         string m;
         setMatriz view;
+        Sokoban objeto;
         restaurarDatos(getRow(),getCol());
+        objeto.EncontrarPuntos(getMatriz(),getRow(),getCol(),Puntos,cantidadPuntos,objeto.getPuntofinal());
+       
         cin>>m;
     if(m != "r" && m != "R"){ 
         moverSokoban(m,true);
@@ -225,7 +229,6 @@ void Game::juegoEnVivo(){
                 setWins(false);
                 borraMatriz(getRow(),getMatriz());
                 restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
-               // restaurarMatriz(getMatrizCargada());
                 resetEstados();
             
             }else{
@@ -235,7 +238,6 @@ void Game::juegoEnVivo(){
     }else{
        borraMatriz(getRow(),getMatriz());
        restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
-       // restaurarMatriz(getMatrizCargada());
         resetEstados();
 
     }
@@ -249,7 +251,6 @@ void Game::cargarPartida(){
     string data;
     string data2;
     string  acumulador;
-    //int n = calcularEstado(name);
     string arr[10000];
     int tam=0;
     bool a=false;
@@ -280,6 +281,7 @@ void Game::cargarPartida(){
         borraMatriz(getRow(),getMatriz());
         restaurarMatriz(cargar(getEstadoCargado(),getRowG(),getColG()));
         restaurarDatos(row,data.size());
+        restCantidad();
         juegoEnVivo();
 
     }else{
@@ -292,11 +294,16 @@ void Game::moverSokoban(string &m,bool op){
         Sokoban objeto;
         objeto.to_upper(m);
         int n =m.size();
+        if(op){n++;}
         for (int i = 0; i < n; i++){ 
+          //  objeto.EncontrarPuntos(getMatriz(),getRow(),getCol(),Puntos,cantidadPuntos,objeto.getPuntofinal());
             transformador(getMatriz(),getRow(),getCol(),arregloEstado);
             tamanoEstados++;
             if(m == "G" || op){
                 Escritura(arregloEstado,tamanoEstados,getRow(),getCol());
+                if(i == n-1){
+                    break;
+                }
                 if(!op){
                 break;
 
@@ -312,18 +319,15 @@ void Game::moverSokoban(string &m,bool op){
 
 void Game::isWins(string **matriz){
     Sokoban obj;
-   
+    int n=0;
     if(cantidadPuntos > cantidadCaja){
-        for (int i = 0; i < cantidadCaja; i++)
+        for (int i = 0; i < cantidadPuntos; i++)
         {
-            if(matriz[Cajas[i].a][Cajas[i].b] !=  matriz[Puntos[i].a][Puntos[i].b]){
-                setWins(false);
-                break;
-            }else{
-                setWins(true);
+            if( matriz[Puntos[i].a][Puntos[i].b] == obj.getCaja()){
+                n++;
             }
         }
-        
+         n == cantidadCaja? setWins(true):setWins(false);
         
     }else{
         for (int i = 0; i < cantidadPuntos; i++)
@@ -343,9 +347,8 @@ void Game::isWins(string **matriz){
 void Sokoban::moverse(string** matriz,int row,int col,char m){
     int f=0;
     int c=0;
-   
     EncontrarPuntos(matriz,row,col,Puntos,cantidadPuntos,getPuntofinal());
-    EncontrarPuntos(matriz,row,col,Cajas,cantidadCaja,getCaja());
+    EncontrarPuntos(matriz,row,col,Cajas,cantidadCaja,getCaja(),true);
 
     //busca al socokan
     buscarSokoban(matriz,row,col,f,c);
@@ -477,21 +480,36 @@ void  Sokoban::moverObjetos(string &a, string &b){
     b= t;
 }
 
-  void Sokoban::EncontrarPuntos(string** matriz,int row,int col,arrF arr[],int &n,string L){
+bool itsHere(arrF arr[],int tam,int x,int y){
+    for (int i = 0; i < tam; i++)
+    {
+        if(arr[i].a == y && arr[i].b== x){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+  void Sokoban::EncontrarPuntos(string** matriz,int row,int col,arrF arr[],int &n,string L,bool op){
+    if(op){n=0;}
        for (int i = 0; i < row; i++)
     {
         for (int j = 0; j < col; j++)
         {
-            if (matriz[i][j] == L)
-            {
-              arr[n].a=i;
-              arr[n].b=j;
-              n++;
+            if(!itsHere(arr,n,j,i))
+            { 
+                if (matriz[i][j] == L)
+                {
+                arr[n].a=i;
+                arr[n].b=j;
+                n++;
+                
+                }
             }
-            
         }
         
     }
+    
   }
 
 void Sokoban::buscarSokoban(string** matriz,int row,int col,int &a,int &b){
@@ -515,7 +533,6 @@ void Sokoban::buscarSokoban(string** matriz,int row,int col,int &a,int &b){
 void Game::cargarTablero(string name){
     if(initGame){
         borraMatriz(getRow(),getMatriz());
-        initGame =false;
     }
     setMatriz  rellenarMatriz;
     ifstream File(name.c_str());
@@ -538,12 +555,7 @@ void Game::cargarTablero(string name){
                 };
                 bool  correcta = isCorrectoMatriz(acumulador,getRow(),getCol(),tam);
                 bool caracteres = ValidCaracteres(acumulador,tam);
-            if( !correcta && !caracteres){
-                restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
-            
-                cout<<"Tablero Invalido"<<endl;
-               
-            }else{
+            if( correcta && caracteres){
                     //funcion para generar la matriz con el array
                 matriz = cargar(acumulador,getRow(),getCol());
                 matrizCargada = acumulador;
@@ -551,26 +563,29 @@ void Game::cargarTablero(string name){
                 bool isLimite = isCorrectoLimite(getMatriz(),getRow(),getCol());
                 if(isCorrectoCaracter && isLimite){
                     initGame = true;
+                    restCantidad();
 
                 }else{
-                    //delete[]arr;
                     borraMatriz(getRow(),getMatriz());
                     restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
-                    
-
                     cout <<"Tablero inválido"<<endl;
                     
                 }
+               
+            }else{
+                restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
+                cout<<"Tablero Invalido"<<endl;
             }
     
         File.close();
 
     }else{
         restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
-       // restaurarMatriz(getMatrizCargada());        
+            
         cout <<"Tablero inválido"<<endl;
 
     }
+    
 
 }
 
@@ -746,21 +761,6 @@ void Game::transformador(string** tablero, int row, int column,string arr[]) { /
    
    arr[tamanoEstados]=res;
 }
-
-// int Game::calcularEstado(string name){
-//     ifstream File(name.c_str());
-//     int n =0;
-//     string a;
-//     if(File.is_open()){
-//         while (!File.eof())
-//         {
-//             File >>a;
-//             n++;
-//         }
-        
-//     }
-//     return n;
-// }
 
 string** Game::cargar(string m,int row,int col){
 

@@ -1,9 +1,11 @@
-7 8
+7 12
 
-XXXXXXXX
-XK.....X
-X.C....X
-XXX..C.X
-X....F.X
-XF.C...X
-XXXXXXXX
+XXXXXXXXXXXX
+XK.........X
+X.C...C..F.X
+XXX........X
+X....F..C..X
+X..C....F..X
+XXXXXXXXXXXX
+
+
