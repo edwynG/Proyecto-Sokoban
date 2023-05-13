@@ -39,7 +39,7 @@ struct arrF
     void set_is_punto(bool op){ispunto = op;}
     bool get_is_punto(){return ispunto;}
     void buscarSokoban(string** matriz,int row,int col,int &a,int &b);
-    void EncontrarPuntos(string** matriz,int row,int col,arrF arr[],int &n,string L,bool op=false);
+    void EncontrarPuntos(string** matriz,int row,int col,arrF arr[],int &n,string L,bool op);
     void setSokoban(string n){ person=n;}
     void setMuro(string n){ muro=n;}
     void setCaja(string n){ caja=n;}
@@ -53,7 +53,7 @@ class setMatriz{
     public:
     setMatriz(){};
      void ImprimirMatriz(string** matriz,int row,int column);
-    string** generarMatriz(int row,int column, string arr[]);
+    
 };
 
 class Game{
@@ -69,6 +69,7 @@ class Game{
     bool wins = false;
     string arregloEstado[10000];
     int tamanoEstados=0;
+    bool isCargado=false;
     public:
     Game(){};
     ~Game(){
@@ -105,6 +106,7 @@ class Game{
     string** cargar(string m,int row,int col);
     void restaurarDatos(int a, int b){ row=a;col =b;}
     bool ValidCaracteres(string str,int n);
+    void generarEstado(string m,int row,int col);
 
 
 };
@@ -183,7 +185,7 @@ void Game::juegoEnVivo(){
     setMatriz view;
     string m = "";
     Sokoban objeto;
-    objeto.EncontrarPuntos(getMatriz(),getRow(),getCol(),Puntos,cantidadPuntos,objeto.getPuntofinal());
+    objeto.EncontrarPuntos(getMatriz(),getRow(),getCol(),Puntos,cantidadPuntos,objeto.getPuntofinal(),false);
     
     while (!getWins()){
         view.ImprimirMatriz(getMatriz(),getRow(),getCol());
@@ -202,11 +204,15 @@ void Game::juegoEnVivo(){
         }
 
     }
-    setWins(false);
+   setWins(false);
     borraMatriz(getRow(),getMatriz());
-    restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
+   if(isCargado){
+     restaurarDatos(getRowG(),getColG());
+     isCargado=false;
+   }
+    restCantidad();
     resetEstados();
-    restaurarDatos(getRow(),getCol());
+    restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
     
 }
 
@@ -216,7 +222,7 @@ void Game::juegoEnVivo(){
         setMatriz view;
         Sokoban objeto;
         restaurarDatos(getRow(),getCol());
-        objeto.EncontrarPuntos(getMatriz(),getRow(),getCol(),Puntos,cantidadPuntos,objeto.getPuntofinal());
+        objeto.EncontrarPuntos(getMatriz(),getRow(),getCol(),Puntos,cantidadPuntos,objeto.getPuntofinal(),false);
        
         cin>>m;
     if(m != "r" && m != "R"){ 
@@ -230,6 +236,8 @@ void Game::juegoEnVivo(){
                 borraMatriz(getRow(),getMatriz());
                 restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
                 resetEstados();
+                restCantidad();
+
             
             }else{
                 juegoEnVivo();
@@ -239,11 +247,14 @@ void Game::juegoEnVivo(){
        borraMatriz(getRow(),getMatriz());
        restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
         resetEstados();
+        restCantidad();
 
     }
    
    
     }
+
+
 
 void Game::cargarPartida(){
     string name="currentGame.txt";
@@ -253,6 +264,7 @@ void Game::cargarPartida(){
     string  acumulador;
     string arr[10000];
     int tam=0;
+    string estado="";
     bool a=false;
     int row=0;
     setMatriz b;
@@ -267,7 +279,8 @@ void Game::cargarPartida(){
             File>>data2;
              acumulador+=data2;
              if(!a){row++;};
-           } while( data != data2); 
+           } while( data != data2);
+            if(!a){estado=acumulador;}
             File>> data2;
             arr[tam]=acumulador;
             acumulador=data2;
@@ -280,13 +293,26 @@ void Game::cargarPartida(){
         File.close();
         borraMatriz(getRow(),getMatriz());
         restaurarMatriz(cargar(getEstadoCargado(),getRowG(),getColG()));
+        setRowG(getRow());
+        setColG(getCol());
         restaurarDatos(row,data.size());
         restCantidad();
+        generarEstado(estado,row,data.size());
+        isCargado=true;
         juegoEnVivo();
 
     }else{
         cout<<"No hay partida guardada"<<endl;
     }
+}
+
+void Game::generarEstado(string m,int row,int col){
+        Sokoban a;
+        setMatriz b;
+        string **M=cargar(m,row,col);
+        a.EncontrarPuntos(M,row,col,Puntos,cantidadPuntos,a.getPuntofinal(),false);
+        b.ImprimirMatriz(M,row,col);
+        borraMatriz(row,M);
 }
 
 /*metodo para mover el sokoban que esta implementado en el metodo juegoEnVivo*/
@@ -347,7 +373,7 @@ void Game::isWins(string **matriz){
 void Sokoban::moverse(string** matriz,int row,int col,char m){
     int f=0;
     int c=0;
-    EncontrarPuntos(matriz,row,col,Puntos,cantidadPuntos,getPuntofinal());
+    EncontrarPuntos(matriz,row,col,Puntos,cantidadPuntos,getPuntofinal(),false);
     EncontrarPuntos(matriz,row,col,Cajas,cantidadCaja,getCaja(),true);
 
     //busca al socokan
@@ -628,18 +654,6 @@ void setMatriz::ImprimirMatriz(string** matriz,int row,int column){
 
 };
 
-/*metodo para generar la matriz con los elementos del archivo*/
-string** setMatriz:: generarMatriz(int row,int column, string arr[]){
-        string** matriz = new string*[row];
-        for (int i = 0; i < row; i++){
-            matriz[i]= new string[column];
-            for (int j = 0; j < column; j++){
-                matriz[i][j] = arr[i][j];
-            }
-        }
-        return matriz;
-};
-
 /*metodo covierte en mayusculas un string*/
 void Sokoban:: to_upper(string &m){
         int n= m.size();
@@ -763,9 +777,9 @@ void Game::transformador(string** tablero, int row, int column,string arr[]) { /
 }
 
 string** Game::cargar(string m,int row,int col){
-
-     string** ma = new string*[row];
+    setMatriz view;
         int n=0;
+     string** ma = new string*[row];
         for (int i = 0; i < row; i++){
             ma[i]= new string[col];
             for (int j = 0; j < col; j++){
@@ -775,6 +789,7 @@ string** Game::cargar(string m,int row,int col){
            
            
         }
+       // view.ImprimirMatriz(ma,row,col);
          return ma;
      
 }
