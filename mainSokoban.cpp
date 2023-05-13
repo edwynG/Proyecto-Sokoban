@@ -150,7 +150,8 @@ void menu(){
 
 
             }else{
-                cout <<"Debes cargar un tablero"<< endl<<endl;;
+                cout <<"Debes cargar un tablero"<< endl<< endl;
+              
                 }
             break;
         case '3':
@@ -167,6 +168,7 @@ void menu(){
         default:
 
             cout <<"Opción inválida"<<endl;
+            cout<<endl;
             break;
         }
 
@@ -270,39 +272,102 @@ void Game::cargarPartida(){
     setMatriz b;
 
     if(File.is_open()){
-        File>>data;
-        acumulador = data;
-        row++;
-        while (!File.eof())
-        {
-           do{
-            File>>data2;
-             acumulador+=data2;
-             if(!a){row++;};
-           } while( data != data2);
-            if(!a){estado=acumulador;}
-            File>> data2;
-            arr[tam]=acumulador;
-            acumulador=data2;
-            tam++;
-            a=true;
+            File>>data;
+        if(!File.eof()){
+            acumulador = data;
+            row++;
+            while (!File.eof())
+            {
+            do{
+                File>>data2;
+                acumulador+=data2;
+                if(!a){row++;};
+            } while( data != data2);
+                if(!a){estado=acumulador;}
+                File>> data2;
+                arr[tam]=acumulador;
+                acumulador=data2;
+                tam++;
+                a=true;
+            }
+            setRowG(row);
+            setColG(data.size());
+            setEstadoCargado(arr[tam-1]);
+            File.close();
+            borraMatriz(getRow(),getMatriz());
+            restaurarMatriz(cargar(getEstadoCargado(),getRowG(),getColG()));
+            setRowG(getRow());
+            setColG(getCol());
+            restaurarDatos(row,data.size());
+            restCantidad();
+            generarEstado(estado,row,data.size());
+            isCargado=true;
+            juegoEnVivo();
+
+        }else{
+             cout<<"No hay partida guardada"<<endl<<endl;
         }
-        setRowG(row);
-        setColG(data.size());
-        setEstadoCargado(arr[tam-1]);
-        File.close();
+    }else{
+        cout<<"No hay partida guardada"<<endl<<endl;
+    }
+}
+
+
+/*metodo para cargar tablero*/
+void Game::cargarTablero(string name){
+    if(initGame){
         borraMatriz(getRow(),getMatriz());
-        restaurarMatriz(cargar(getEstadoCargado(),getRowG(),getColG()));
-        setRowG(getRow());
-        setColG(getCol());
-        restaurarDatos(row,data.size());
-        restCantidad();
-        generarEstado(estado,row,data.size());
-        isCargado=true;
-        juegoEnVivo();
+    }
+    setMatriz  rellenarMatriz;
+    ifstream File(name.c_str());
+
+    if(File.is_open()){
+            File >> row;
+            File >> col;
+                string line="";
+                string acumulador= "";
+                int tam=0;
+                //array dinamico para guardar las lineas de la matriz
+                while (true){
+                    File >> line;
+                    if(File.eof()){
+                        break;
+                    }
+                    acumulador+=line;
+                    tam++;
+                    
+                };
+                bool  correcta = isCorrectoMatriz(acumulador,getRow(),getCol(),tam);
+                bool caracteres = ValidCaracteres(acumulador,tam);
+            if( correcta && caracteres){
+                    //funcion para generar la matriz con el array
+                matriz = cargar(acumulador,getRow(),getCol());
+                matrizCargada = acumulador;
+                bool isCorrectoCaracter= isCorrecMatrix(getMatriz(),getRow(),getCol());
+                bool isLimite = isCorrectoLimite(getMatriz(),getRow(),getCol());
+                if(isCorrectoCaracter && isLimite){
+                    initGame = true;
+                    restCantidad();
+
+                }else{
+                    borraMatriz(getRow(),getMatriz());
+                    restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
+                    cout <<"Tablero inválido"<<endl<<endl;
+                    
+                }
+               
+            }else{
+                restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
+                cout<<"Tablero Invalido"<<endl<<endl;
+            }
+    
+        File.close();
 
     }else{
-        cout<<"No hay partida guardada"<<endl;
+        restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
+            
+        cout <<"Tablero inválido"<<endl<< endl;
+
     }
 }
 
@@ -311,7 +376,6 @@ void Game::generarEstado(string m,int row,int col){
         setMatriz b;
         string **M=cargar(m,row,col);
         a.EncontrarPuntos(M,row,col,Puntos,cantidadPuntos,a.getPuntofinal(),false);
-        b.ImprimirMatriz(M,row,col);
         borraMatriz(row,M);
 }
 
@@ -553,66 +617,6 @@ void Sokoban::buscarSokoban(string** matriz,int row,int col,int &a,int &b){
         }
         
     }
-}
-
-/*metodo para cargar tablero*/
-void Game::cargarTablero(string name){
-    if(initGame){
-        borraMatriz(getRow(),getMatriz());
-    }
-    setMatriz  rellenarMatriz;
-    ifstream File(name.c_str());
-
-    if(File.is_open()){
-            File >> row;
-            File >> col;
-                string line="";
-                string acumulador= "";
-                int tam=0;
-                //array dinamico para guardar las lineas de la matriz
-                while (true){
-                    File >> line;
-                    if(File.eof()){
-                        break;
-                    }
-                    acumulador+=line;
-                    tam++;
-                    
-                };
-                bool  correcta = isCorrectoMatriz(acumulador,getRow(),getCol(),tam);
-                bool caracteres = ValidCaracteres(acumulador,tam);
-            if( correcta && caracteres){
-                    //funcion para generar la matriz con el array
-                matriz = cargar(acumulador,getRow(),getCol());
-                matrizCargada = acumulador;
-                bool isCorrectoCaracter= isCorrecMatrix(getMatriz(),getRow(),getCol());
-                bool isLimite = isCorrectoLimite(getMatriz(),getRow(),getCol());
-                if(isCorrectoCaracter && isLimite){
-                    initGame = true;
-                    restCantidad();
-
-                }else{
-                    borraMatriz(getRow(),getMatriz());
-                    restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
-                    cout <<"Tablero inválido"<<endl;
-                    
-                }
-               
-            }else{
-                restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
-                cout<<"Tablero Invalido"<<endl;
-            }
-    
-        File.close();
-
-    }else{
-        restaurarMatriz(cargar(getMatrizCargada(),getRow(),getCol()));
-            
-        cout <<"Tablero inválido"<<endl;
-
-    }
-    
-
 }
 
 bool Game::ValidCaracteres(string str,int n){
