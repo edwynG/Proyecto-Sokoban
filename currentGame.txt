@@ -31,8 +31,8 @@ X..C....F..X
 XXXXXXXXXXXX
 
 XXXXXXXXXXXX
-X....K.....X
-X.C...C..F.X
+X..........X
+X.C.K.C..F.X
 XXX........X
 X....F..C..X
 X..C....F..X
@@ -48,17 +48,25 @@ XXXXXXXXXXXX
 
 XXXXXXXXXXXX
 X..........X
-X.C...C..F.X
-XXX..K.....X
+X.C...KC.F.X
+XXX........X
 X....F..C..X
 X..C....F..X
 XXXXXXXXXXXX
 
 XXXXXXXXXXXX
 X..........X
-X.C...C..F.X
+X.C....KCF.X
 XXX........X
-X....K..C..X
+X....F..C..X
+X..C....F..X
+XXXXXXXXXXXX
+
+XXXXXXXXXXXX
+X..........X
+X.C.....KC.X
+XXX........X
+X....F..C..X
 X..C....F..X
 XXXXXXXXXXXX
 
