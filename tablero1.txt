@@ -1,0 +1,12 @@
+9 9
+
+XXXXXXXXX
+X......FX
+X.......X
+X.......X
+X.C.....X
+X.......X
+X...C...X
+X..K....X
+XXXXXXXXX
+

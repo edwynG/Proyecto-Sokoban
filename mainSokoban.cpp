@@ -169,7 +169,7 @@ void menu() {
 
         default:
 
-            cout << "Opci�n inv�lida" << endl;
+            cout << "Opcion invalida" << endl;
             cout << endl;
             break;
         }
@@ -328,6 +328,8 @@ void Game::cargarTablero(string name) {
     ifstream File(name.c_str());
 
     if (File.is_open()) {
+        setRowG(getRow());
+        setColG(getCol());
         File >> row;
         File >> col;
 
@@ -337,9 +339,10 @@ void Game::cargarTablero(string name) {
                 string line = "";
                 string acumulador = "";
                 int tam = 0;
-                //array dinamico para guardar las lineas de la matriz
+                //array dinamico para guardar las lineas de la m4atriz
                 while (true) {
                     File >> line;
+                    
                     if (File.eof()) {
                         break;
                     }
@@ -361,26 +364,30 @@ void Game::cargarTablero(string name) {
 
                     }
                     else {
+                        restaurarDatos(getRowG(), getColG());
                         borraMatriz(getRow(), getMatriz());
                         restaurarMatriz(cargar(getMatrizCargada(), getRow(), getCol()));
-                        cout << "Tablero inv�lido" << endl << endl;
+                        cout << "Tablero invalido" << endl << endl;
 
                     }
 
                 }
                 else {
-                    restaurarMatriz(cargar(getMatrizCargada(), getRow(), getCol()));
+                     restaurarDatos(getRowG(), getColG());
+                      restaurarMatriz(cargar(getMatrizCargada(), getRow(), getCol()));
                     cout << "Tablero Invalido" << endl << endl;
                 }
 
             }
             else {
+                restaurarDatos(getRowG(), getColG());
                 restaurarMatriz(cargar(getMatrizCargada(), getRow(), getCol()));
                 cout << "Tablero Invalido" << endl << endl;
 
             }
         }
         else {
+            restaurarDatos(getRowG(), getColG());
             restaurarMatriz(cargar(getMatrizCargada(), getRow(), getCol()));
             cout << "Tablero Invalido" << endl << endl;
 
@@ -390,9 +397,10 @@ void Game::cargarTablero(string name) {
 
     }
     else {
+        restaurarDatos(getRowG(), getColG());
         restaurarMatriz(cargar(getMatrizCargada(), getRow(), getCol()));
 
-        cout << "Tablero inv�lido" << endl << endl;
+        cout << "Tablero invalido" << endl << endl;
 
     }
 }
